@@ -12,8 +12,24 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const userId = searchParams.get("userId");
 
-  if (!userId) {
-    return Response.json({ error: "userId is required" }, { status: 400 });
+  // If userId is "all" or not provided, return all access entries (admin only)
+  if (!userId || userId === "all") {
+    if ((session.user as { role: string }).role !== "ADMIN") {
+      return Response.json({ error: "Forbidden" }, { status: 403 });
+    }
+    try {
+      const access = await db.serverAccess.findMany({
+        include: {
+          user: {
+            select: { id: true, username: true, role: true },
+          },
+        },
+      });
+      return Response.json(access);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Unknown error";
+      return Response.json({ error: message }, { status: 500 });
+    }
   }
 
   // Only admin or the user themselves can see access

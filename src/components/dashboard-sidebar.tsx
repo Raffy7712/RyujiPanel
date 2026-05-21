@@ -8,6 +8,7 @@ import {
   Server,
   Users,
   Settings,
+  Shield,
   LogOut,
 } from "lucide-react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -39,6 +40,12 @@ const navItems = [
     label: "Settings",
     href: "/dashboard/settings",
     icon: Settings,
+    adminOnly: true,
+  },
+  {
+    label: "Server Access",
+    href: "/dashboard/settings/access",
+    icon: Shield,
     adminOnly: true,
   },
 ]
