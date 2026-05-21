@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  serverAccess ServerAccess[]
+}
+
+model ServerAccess {
+  id                  String   @id @default(cuid())
+  userId              String
+  pterodactylServerId String
+  createdAt           DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, pterodactylServerId])
+}
+
+model PanelSettings {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+}
+
+enum Role {
+  USER
+  ADMIN
+}
